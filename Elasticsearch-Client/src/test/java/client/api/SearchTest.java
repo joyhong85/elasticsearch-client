@@ -212,7 +212,7 @@ public class SearchTest {
 			e.printStackTrace();
 		}
 		System.out.println(succeeded);
-		
+		 
 		api.close();
 	}
 	
