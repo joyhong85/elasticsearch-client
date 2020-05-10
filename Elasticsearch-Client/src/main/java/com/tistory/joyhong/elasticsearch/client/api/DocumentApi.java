@@ -170,7 +170,7 @@ public class DocumentApi {
 	 */
 	public GetResponse getDocument(String indexName, String typeName, String _id, String[] includeField, String[] excludeField) {
 		GetRequest request = new GetRequest(indexName, typeName, _id);
-		//결과로 반환하는 source에 포함할 필드와 포함하지 않을 필드를 설명
+		//결과로 반환하는 source에 포함할 필드와 포함하지 않을 필드를 설정
 		FetchSourceContext fetchSourceContext = new FetchSourceContext(true, includeField, excludeField);
 		request.fetchSourceContext(fetchSourceContext); 
 		return _getDocument(request);
@@ -413,7 +413,7 @@ public class DocumentApi {
 	 * ArrayList<BulkData>를 입력받아 bulk request를 수행한다.
 	 * @param bulkList
 	 */
-	public void bulkDocument(ArrayList<BulkData> bulkList) {
+	public BulkResponse bulkDocument(ArrayList<BulkData> bulkList) {
 		
 		BulkRequest request = new BulkRequest();
 		
@@ -441,6 +441,7 @@ public class DocumentApi {
 		log.info(response.getItems());
 		log.info(response.getTook());
 		
+		return response;
 	}
 
 	

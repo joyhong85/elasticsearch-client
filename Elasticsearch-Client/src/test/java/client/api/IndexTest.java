@@ -15,7 +15,7 @@ public class IndexTest {
 
 	public String ip = "localhost";
 	
-	@Test
+//	@Test
 	public void createIndex() {
 		ClientApi api = new ClientApi(ip);
 		IndexApi index = api.getIndexApi();
@@ -31,10 +31,15 @@ public class IndexTest {
 					.startObject("analysis")
 						.startObject("analyzer")
 
-							.startObject("arirang_index")
+							/*.startObject("arirang_index")
 								.field("tokenizer", "arirang_tokenizer")
 								.array("filter", new String[] { "arirang_filter", "arirang_hanja_filter", "arirang_rm_punc_filter", "joyhong_snowball" })
+							.endObject()*/
+						
+							.startObject("nori")
+								.field("tokenizer", "nori_tokenizer")
 							.endObject()
+							
 						.endObject()
 					.endObject()
 				.endObject();
@@ -100,7 +105,7 @@ public class IndexTest {
 		
 	}
 	
-//	@Test
+	@Test
 	public void analyze() {
 		ClientApi api = new ClientApi(ip);
 		IndexApi index = api.getIndexApi();

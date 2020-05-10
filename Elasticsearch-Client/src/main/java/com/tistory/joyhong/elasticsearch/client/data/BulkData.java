@@ -45,5 +45,4 @@ public class BulkData {
 		this.actionType = actionType;
 	}
 	
-	
 }

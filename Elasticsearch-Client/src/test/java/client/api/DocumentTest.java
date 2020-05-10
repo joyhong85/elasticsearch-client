@@ -19,12 +19,14 @@ import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.get.MultiGetItemResponse;
 import org.elasticsearch.action.get.MultiGetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -265,6 +267,22 @@ public class DocumentTest {
 			
 		}
 	}
+//	@Test
+	public void updateDocument2() throws IOException {
+		ClientApi api = new ClientApi(ip);
+		DocumentApi docApi = api.getDocumentApi();
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		jsonMap.put("code", "111");
+		jsonMap.put("title", "타이틀");
+		jsonMap.put("date", new Date());
+		UpdateResponse result = docApi.updateDocument("test", "_doc", "1", jsonMap);
+		api.close();
+		
+		if(result != null) {
+			System.out.println(result.getResult().toString());
+			
+		}
+	}
 	
 //	@Test
 	public void bulk() throws IOException {
@@ -275,8 +293,9 @@ public class DocumentTest {
 		RestHighLevelClient client = (RestHighLevelClient) item[1];
 		
 		request.add(new IndexRequest("test", "_doc", "1").source(XContentType.JSON,"code", "100", "title","넘버원","date",new Date()));
-		request.add(new IndexRequest("test", "_doc", "2").source(XContentType.JSON,"code", "101", "title","넘버투","date",new Date()));
-		request.add(new IndexRequest("test", "_doc", "3").source(XContentType.JSON,"code", "102", "title","넘버쓰리","date",new Date()));
+		request.add(new UpdateRequest("test", "_doc", "2").doc(XContentType.JSON,"code", "101", "title","넘버투","date",new Date()));
+		request.add(new DeleteRequest("test", "_doc", "3"));
+		request.add(new IndexRequest("test", "_doc", "4").source(XContentType.JSON,"code", "103", "title","넘버포","date",new Date()));
 		
 		BulkResponse bulkResponse = client.bulk(request, RequestOptions.DEFAULT);
 		for (BulkItemResponse bulkItemResponse : bulkResponse) { 
@@ -295,6 +314,32 @@ public class DocumentTest {
 		    }
 		    System.out.println(itemResponse);
 		}
+		api.close();
+	}
+	
+	@Test
+	public void bulkWithBulkData() throws IOException {
+		ClientApi api = new ClientApi(ip);
+		DocumentApi docApi = api.getDocumentApi();
+		ArrayList<BulkData> bulkList = new ArrayList<BulkData>();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.KOREAN);
+		for(int i=1;i<101;i++) {
+			BulkData data = new BulkData();
+			data.setActionType(Type.CREATE);
+			data.setIndexName("test");
+			data.setTypeName("_doc");
+			data.setId(String.valueOf(i));
+			Map<String, Object> jsonMap = new HashMap<String, Object>();
+			jsonMap.put("code", String.valueOf(i));
+			jsonMap.put("title", "제목 "+ String.valueOf(i));
+			jsonMap.put("date", format.format(new Date()));
+			data.setJsonMap(jsonMap);
+			bulkList.add(data);
+		}
+		
+		BulkResponse response = docApi.bulkDocument(bulkList);
+		
+		System.out.println(response.status() + " / " + response.getTook());
 		api.close();
 	}
 	
@@ -357,7 +402,7 @@ public class DocumentTest {
 		api.close();
 	}
 	
-	@Test
+//	@Test
 	public void bulkProcessor3() throws IOException {
 		
 		ClientApi api = new ClientApi(ip);
