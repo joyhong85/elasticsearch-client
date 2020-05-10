@@ -311,6 +311,7 @@ public class DocumentTest {
 				    break;
 				case DELETE:   
 				    DeleteResponse deleteResponse = (DeleteResponse) itemResponse;
+				    break;
 		    }
 		    System.out.println(itemResponse);
 		}
